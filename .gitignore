@@ -1,0 +1,23 @@
+# Large / private / local-only files
+images/gsi/*.img
+images/gsi/*.xz
+images/boot/build/
+backups
+
+# Logs
+logs/*.log
+!logs/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+
+# local tablet APK cache
+tablet/apps/*.apk
+!tablet/apps/.gitkeep
+backups

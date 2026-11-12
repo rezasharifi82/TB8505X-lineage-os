@@ -1,0 +1,13 @@
+[Unit]
+Description=Keep TB-8505X adbd running as root
+After=default.target
+
+[Service]
+Type=simple
+Environment=ADB=%h/tools/platform-tools/adb
+ExecStart=%h/Desktop/TB8505X/TB8505X-lineage-os/scripts/tb_adb_root_watch.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

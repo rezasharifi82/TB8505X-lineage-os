@@ -1,0 +1,6 @@
+id=tb8505x-adb-root
+name=TB-8505X root adbd
+version=v1
+versionCode=1
+author=TB8505X project
+description=Keeps adbd running as root on the LineageOS 18.1 GSI (phh-su build).
