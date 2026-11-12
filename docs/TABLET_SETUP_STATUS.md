@@ -1,69 +1,78 @@
-# Tablet setup status (2026-11-12, updated)
+# Tablet setup status (2026-11-12, final)
 
 Device: **Lenovo TB-8505X** (`HGR2YTWY`) running **LineageOS 18.1 / Android 11**
 (`18.1-20240121-UNOFFICIAL-arm64_bvS`, PHH GSI, arm64_bvS). Managed over USB ADB
-(no WiFi required for this setup).
+(no WiFi required).
 
 ## Installed apps (verified)
 
-| App | Package | Version/build | Purpose |
-|---|---|---|---|
-| F-Droid | `org.fdroid.fdroid` | 1023052 | Open-source app store |
-| SimpleSSHD | `org.galexander.sshd` | 27 | SSH/SCP server on tablet (port 2222) |
-| ConnectBot | `org.connectbot` | 11101000 | SSH client |
-| MGit | `com.manichord.mgit` | 240 | Git client |
-| Markor | `net.gsantner.markor` | 164 | Markdown editor (vault-compatible) |
-| KDE Connect | `org.kde.kdeconnect_tp` | 1.37.2 | Ubuntu integration |
-| Obsidian | `md.obsidian` | 1.15.1 | Notes/vault |
-| Firefox (Fennec) | `org.mozilla.fennec_fdroid` | 1590120 | Browser |
-| LocalSend | `org.localsend.localsend_app` | 1.18.2 (arm64) | LAN file transfer |
-| Syncthing-Fork | `com.github.catfriend1.syncthingfork` | 2.1.7.0 | Continuous sync |
-| Termux | `com.termux` | 0.118.3 (arm64, GitHub) | Terminal, sshd, git, rsync |
-| Pixel Player | `com.theveloper.pixelplay` | 0.7.5-beta (arm64) | Music player |
-| Telegram (FOSS) | `org.telegram.messenger.beta` | 10.14.3 (TF-BETA) | Messaging |
+| App | Package | Notes |
+|---|---|---|
+| F-Droid | `org.fdroid.fdroid` | Open-source app store |
+| Obsidian | `md.obsidian` | 1.15.1, vault notes |
+| Firefox (Fennec) | `org.mozilla.fennec_fdroid` | Browser |
+| LocalSend | `org.localsend.localsend_app` | 1.18.2 (arm64) |
+| Syncthing-Fork | `com.github.catfriend1.syncthingfork` | 2.1.7.0 |
+| Termux | `com.termux` | 0.118.3 (arm64), terminal |
+| Pixel Player | `com.theveloper.pixelplay` | 0.7.5-beta (arm64) |
+| Telegram (FOSS) | `org.telegram.messenger.beta` | 10.14.3 |
+| KDE Connect | `org.kde.kdeconnect_tp` | 1.37.2 |
+| Bitwarden | `com.x8bit.bitwarden` | fdroid build 2026.10.1-bwpm |
+| NetBird | `io.netbird.client` | v0.6.2 |
+| Aurora Store | `com.aurora.store` | 4.8.4 |
+| NewPipe | `org.schabi.newpipe` | 0.29.1 |
+| Aegis | `com.beemdevelopment.aegis` | 3.4.3 (2FA) |
+| Material Files | `me.zhanghai.android.files` | 1.7.5 |
 
-APKs staged on tablet at `/sdcard/Download/apks/tablet_apps/` (14 files) and
-cached locally in `tablet/apps/` (gitignored) / host `tablet_apps/`.
+**Removed per request:** Markor, ConnectBot, MGit, SimpleSSHD.
 
-> Telegram-FOSS (`org.telegram.messenger.beta`) was installed because
-> `telegram.org` was not reachable from the setup environment; it is a
-> FOSS-compatible Telegram client. Replace with official Telegram if preferred
-> once you have connectivity.
+> Telegram-FOSS installed (telegram.org unreachable during setup); replace with
+> official Telegram if preferred when online.
 
-## Obsidian vault linked to GitHub repo
+## Obsidian ↔ Git (Information-Theory-Notes)
 
 - Repo: **https://github.com/rezasharifi82/Information-Theory-Notes.git**
-- Cloned/pushed to tablet at: `/sdcard/Documents/Information-Theory-Notes/`
-  (includes `.git` with `origin` pointing to the GitHub repo).
-- Open in **Obsidian**: vault/folder → `Documents/Information-Theory-Notes`.
-  Markor can also edit the same Markdown files.
-- **Git sync on tablet:** use **MGit** (installed) or **Termux** (`pkg install git`)
-  to pull/commit/push. For in-app Obsidian Git plugin, enable community plugins
-  in Obsidian and install "Obsidian Git" when network is available.
+- On tablet: `/sdcard/Documents/Information-Theory-Notes/` (full clone with
+  `.git`, `origin` → GitHub, branch `main`). Open as vault in **Obsidian**.
 - Host clone: `/home/mreza/Desktop/TB8505X/Information-Theory-Notes`.
+- Git workflow on tablet: **Termux** (see below). When online, use `git pull/push`
+  in Termux or install Obsidian Git plugin.
 
-## Communication & services
+## Termux (apt, storage, git)
 
-- **Root ADB (active):** host watcher `~/.config/systemd/user/tb-adb-root.service`
-  enabled & active. `adb shell id` → `uid=0(root)`. One-shot: `scripts/tb_adb_root.sh`.
-- **SSH to tablet:** SimpleSSHD (open → set password → START), then
-  `adb forward tcp:2222 tcp:2222 && ssh -p 2222 <user>@localhost`.
-- **SSH from tablet:** ConnectBot; Ubuntu `sshd` inactive by default.
-- **Termux SSH:** `pkg update && pkg install openssh git rsync && sshd` (port 8022)
-  — `adb forward tcp:8022 tcp:8022`.
-- **KDE Connect:** pair with `kdeconnect` on Ubuntu over LAN.
-- **Syncthing-Fork / LocalSend:** installed for file sync/transfer.
-- **Git:** MGit + Termux git. Docs snapshot at `/sdcard/Documents/TB8505X-notes/`.
+- `apt`/`pkg`/`dpkg` binaries present (bootstrap). **Storage access configured:**
+  `~/storage/shared` → `/sdcard`, plus `downloads`, `documents`, `pictures`, `dcim`,
+  `external-0` symlinks. Permissions granted (`READ/WRITE/MANAGE_EXTERNAL_STORAGE`).
+- **Git offline:** git and common dependencies (`libcurl`, `openssl`, `pcre2`,
+  `libexpat`, `less`, `libssh2`, `ncurses`, `libiconv`, etc.) were extracted into
+  `$PREFIX` and debs staged at `~/pkgs` and `/sdcard/Download/termux_pkgs/` for
+  manual/offline use. If `git` is not fully functional in your session (Termux
+  packaging/linker specifics), run `pkg install git openssh` once the tablet has
+  network — `apt/pkg` are ready.
+- Example: `cd ~/storage/shared/Documents/Information-Theory-Notes`
 
-## Boot animation
+## Communication (ADB-focused)
 
-Custom animation `assets/bootanimation.zip` (gold bat emblem, "LINEAGEOS 18.1 /
-TB-8505X · akita_row_call", 800×1280, 30f) copied to `/product/media/bootanimation.zip`
-(and overlay paths) on 2026-11-12. `/system/media` is read-only on this GSI;
-**reboot to verify**. If not picked up, inject into system image or use a Magisk overlay.
+- **Root ADB:** host watcher `~/.config/systemd/user/tb-adb-root.service` enabled
+  & active (`phh-su` → `service.adb.root=1`). `adb shell id` → `uid=0(root)`.
+  One-shot: `TB8505X-lineage-os/scripts/tb_adb_root.sh`.
+- **ADB is the primary channel:** `adb push/pull`, `adb shell`, port forwarding
+  (`adb forward`), reverse (`adb reverse`), `adb install`, screen via `scrcpy`.
+  No SimpleSSHD/ConnectBot installed (as requested).
+- **KDE Connect**, **Syncthing-Fork**, **LocalSend** installed for LAN sync when
+  available. **NetBird** installed for mesh VPN.
 
-## Notes
+## Optimizations & customization applied
 
-- All installs done over USB ADB without WiFi. WiFi is enabled but not joined.
-- For Telegram official app, install `org.telegram.messenger` when desired.
-- Repos pushed: `TB8505X-lineage-os` and `TB8505X-ubuntutouch` on GitHub.
+- Animations: window/transition/animator scales set to **0.5**.
+- Screen timeout **10 min**; adaptive brightness on; stay awake while charging.
+- Background process limit reduced; WiFi/BLE scan-always disabled.
+- Battery/deviceidle whitelist: Termux, Syncthing-Fork.
+- **Wallpaper & lockscreen** set to custom images:
+  `/sdcard/Pictures/wallpaper_lineage.png`, `/sdcard/Pictures/lockscreen_lineage.png`
+  (copied to `/data/system/users/0/wallpaper{,_lock}`).
+- **Boot animation:** custom bat-emblem `assets/bootanimation.zip` installed to
+  `/product/media/bootanimation.zip` (+ overlay paths). Reboot to verify on this GSI.
+
+APKs staged on tablet at `/sdcard/Download/apks/tablet_apps/` and cached locally
+in `tablet/apps/` (gitignored).
